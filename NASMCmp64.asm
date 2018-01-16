@@ -4,6 +4,7 @@ section .data
     git_repo       db      'https://github.com/nerfnet/examplex64/', 0
     empty_field    db      ' ', 0
     
+    exit_code      equ     0 ; set value, 0 for ok
     default_number equ     1 ; set value
     compare_number equ     2 ; set value
 
@@ -34,15 +35,18 @@ _compare:
     jmp              _exit_correct        ; !=
     
 _exit: 
-    PRINT_STRING     'exit process'
-    push             dword 0
-    mov              eax, 0x1
-    int              0x80
-    ret              ; return  
+    PRINT_STRING     'Value incorrect, exit'
+    jmp              _terminate
  
 _exit_correct:
-   PRINT_STRING      'finished'
-   push              dword 0
-   mov               eax, 0x1
-   int 0x80
-   ret;              ; return
+   PRINT_STRING      'Value correct, exit'
+   jmp               _terminate
+   
+_terminate:          ; hacky termination job, will use ExitProcess in future
+  push               exit_code
+  push               -1
+  push               0
+  mov                eax, 0x002a 
+  mov                edx, 7FFE0300
+  call               dword   ptr   ds:[edx]
+  ret                ; return
