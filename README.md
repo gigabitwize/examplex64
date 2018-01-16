@@ -1,0 +1,1 @@
+A Windows NASM x64 test, set the value, compile and link, done!
